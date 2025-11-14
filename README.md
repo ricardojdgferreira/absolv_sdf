@@ -26,6 +26,10 @@ where the latter will be the main focus of this framework.
 aware that it is not guaranteed to provide correct results, the documentation and testing is incomplete, and the
 API can change without notice.*
 
+## UPDATE ##
+- Code within setup.py was adjusted to allow file input.
+- Now is possible to pass a molecule file (.sdf/.mol2) to keep desired conformation and process solvents as SMILES
+
 ## Installation
 
 This package can be installed using `conda` (or `mamba`, a faster version of `conda`):
