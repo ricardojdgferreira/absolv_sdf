@@ -35,11 +35,13 @@ def _approximate_box_size_by_density(
         The box size.
     """
 
-    molecules = {
-        smiles: openff.toolkit.Molecule.from_smiles(smiles, allow_undefined_stereo=True)
-        for smiles in {smiles for smiles, _ in components}
-    }
-
+    #molecules = {
+    #    smiles: openff.toolkit.Molecule.from_file(smiles)
+    #    for smiles in {smiles for smiles, _ in components}
+    #}
+    
+    # changed to use the modified function instead
+    molecules = {smiles: _molecule_from_smiles(smiles) for smiles in {smiles for smiles, _ in components}}
     volume = 0.0 * openmm.unit.angstrom**3
 
     for smiles, count in components:
@@ -98,18 +100,18 @@ def _generate_input_file(
     )
 
 
+# changed: now tests importing a molecule from a file first
 def _molecule_from_smiles(smiles: str) -> openff.toolkit.Molecule:
-    """Create a molecule from a SMILES string."""
-
-    try:
-        molecule = openff.toolkit.Molecule.from_mapped_smiles(
-            smiles, allow_undefined_stereo=True
-        )
-    except (openff.toolkit.utils.exceptions.SmilesParsingError, ValueError):
-        molecule = openff.toolkit.Molecule.from_smiles(
-            smiles, allow_undefined_stereo=True
-        )
-
+    """Create a molecule from a SMILES string or, alternatively, from a SDF/MOL2 file."""
+   
+    if os.path.isfile(smiles) == False:
+        try:
+            molecule = openff.toolkit.Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
+        except (openff.toolkit.utils.exceptions.SmilesParsingError, ValueError):
+            molecule = openff.toolkit.Molecule.from_smiles(smiles, allow_undefined_stereo=True)
+    else:
+        molecule = openff.toolkit.Molecule.from_file(smiles)
+   
     return molecule
 
 
